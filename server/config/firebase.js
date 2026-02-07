@@ -10,10 +10,15 @@ if (fs.existsSync(keyPath)) {
   const serviceAccount = require(keyPath);
   credential = admin.credential.cert(serviceAccount);
 } else {
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+  // Handle both escaped newlines and actual newlines
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.replace(/\\n/g, '\n');
+  }
   credential = admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    privateKey,
   });
 }
 
